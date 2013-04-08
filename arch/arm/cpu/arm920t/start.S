@@ -70,23 +70,16 @@ start_code:
 	orr	r0, r0, #0xd3
 	msr	cpsr, r0
 
-	bl	coloured_LED_init
-	bl	red_LED_on
-
-
-	/* turn off the watchdog */
-
-#if defined(CONFIG_S3C2440)
 #define pWTCON	0x53000000
 #define INTMSK	0x4A000008	/* Interupt-Controller base addresses */
 #define INTSUBMSK	0x4A00001C
 #define CLKDIVN	0x4C000014	/* clock divisor register */
-#endif
 
 #define INTSUBMSK_val	0xffff
 #define MPLLCON_val	((0x7f << 12) + (0x2 << 4) + 0x1)	/* 405.00 MHz */
 #define UPLLCON_val	((0x38 << 12) + (0x2 << 4) + 0x2)
 #define CLKDIVN_val	5 /* FCLK:HCLK:PCLK = 1:3:6 */
+	/* turn off the watchdog */
 
 	ldr	r0, =pWTCON
 	mov	r1, #0x0
@@ -99,11 +92,10 @@ start_code:
 	ldr	r0, =INTMSK
 	str	r1, [r0]
 
-#if  defined(CONFIG_S3C2440)
 	ldr	r1, =INTSUBMSK_val
 	ldr	r0, =INTSUBMSK
 	str	r1, [r0]
-# endif
+
 
 	/* Clock asynchronous mode */
 	mrc	p15, 0, r1, c1, c0, 0
