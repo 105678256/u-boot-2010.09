@@ -51,7 +51,7 @@ enum s3c24x0_uarts_nr {
 #define S3C24X0_DMA_BASE		0x4B000000
 #define S3C24X0_CLOCK_POWER_BASE	0x4C000000
 #define S3C24X0_LCD_BASE		0x4D000000
-#define S3C2410_NAND_BASE		0x4E000000
+#define S3C2440_NAND_BASE		0x4E000000
 #define S3C24X0_UART_BASE		0x50000000
 #define S3C24X0_TIMER_BASE		0x51000000
 #define S3C24X0_USB_DEVICE_BASE		0x52000140
@@ -60,9 +60,9 @@ enum s3c24x0_uarts_nr {
 #define S3C24X0_I2S_BASE		0x55000000
 #define S3C24X0_GPIO_BASE		0x56000000
 #define S3C24X0_RTC_BASE		0x57000000
-#define S3C2410_ADC_BASE		0x58000000
+#define S3C2440_ADC_BASE		0x58000000
 #define S3C24X0_SPI_BASE		0x59000000
-#define S3C2410_SDI_BASE		0x5A000000
+#define S3C2440_SDI_BASE		0x5A000000
 
 
 /* include common stuff */
@@ -99,9 +99,9 @@ static inline struct s3c24x0_lcd *s3c24x0_get_base_lcd(void)
 	return (struct s3c24x0_lcd *)S3C24X0_LCD_BASE;
 }
 
-static inline struct s3c2410_nand *s3c2410_get_base_nand(void)
+static inline struct s3c2440_nand *s3c2440_get_base_nand(void)
 {
-	return (struct s3c2410_nand *)S3C2410_NAND_BASE;
+	return (struct s3c2440_nand *)S3C2440_NAND_BASE;
 }
 
 static inline struct s3c24x0_uart
@@ -145,9 +145,9 @@ static inline struct s3c24x0_rtc *s3c24x0_get_base_rtc(void)
 	return (struct s3c24x0_rtc *)S3C24X0_RTC_BASE;
 }
 
-static inline struct s3c2410_adc *s3c2410_get_base_adc(void)
+static inline struct s3c2440_adc *s3c2440_get_base_adc(void)
 {
-	return (struct s3c2410_adc *)S3C2410_ADC_BASE;
+	return (struct s3c2440_adc *)S3C2440_ADC_BASE;
 }
 
 static inline struct s3c24x0_spi *s3c24x0_get_base_spi(void)
@@ -155,9 +155,9 @@ static inline struct s3c24x0_spi *s3c24x0_get_base_spi(void)
 	return (struct s3c24x0_spi *)S3C24X0_SPI_BASE;
 }
 
-static inline struct s3c2410_sdi *s3c2410_get_base_sdi(void)
+static inline struct s3c2440_sdi *s3c2440_get_base_sdi(void)
 {
-	return (struct s3c2410_sdi *)S3C2410_SDI_BASE;
+	return (struct s3c2440_sdi *)S3C2440_SDI_BASE;
 }
 
 #endif /*__S3C2440_H__*/

@@ -78,7 +78,7 @@ struct s3c24x0_interrupt {
 	u32	PRIORITY;
 	u32	INTPND;
 	u32	INTOFFSET;
-#ifdef CONFIG_S3C2410
+#ifdef CONFIG_S3C2440
 	u32	SUBSRCPND;
 	u32	INTSUBMSK;
 #endif
@@ -88,11 +88,11 @@ struct s3c24x0_interrupt {
 /* DMAS (see manual chapter 8) */
 struct s3c24x0_dma {
 	u32	DISRC;
-#ifdef CONFIG_S3C2410
+#ifdef CONFIG_S3C2440
 	u32	DISRCC;
 #endif
 	u32	DIDST;
-#ifdef CONFIG_S3C2410
+#ifdef CONFIG_S3C2440
 	u32	DIDSTC;
 #endif
 	u32	DCON;
@@ -103,7 +103,7 @@ struct s3c24x0_dma {
 #ifdef CONFIG_S3C2400
 	u32	res[1];
 #endif
-#ifdef CONFIG_S3C2410
+#ifdef CONFIG_S3C2440
 	u32	res[7];
 #endif
 };
@@ -114,7 +114,7 @@ struct s3c24x0_dmas {
 
 
 /* CLOCK & POWER MANAGEMENT (see S3C2400 manual chapter 6) */
-/*                          (see S3C2410 manual chapter 7) */
+/*                          (see S3C2440 manual chapter 7) */
 struct s3c24x0_clock_power {
 	u32	LOCKTIME;
 	u32	MPLLCON;
@@ -143,7 +143,7 @@ struct s3c24x0_lcd {
 	u32	res[8];
 	u32	DITHMODE;
 	u32	TPAL;
-#ifdef CONFIG_S3C2410
+#ifdef CONFIG_S3C2440
 	u32	LCDINTPND;
 	u32	LCDSRCPND;
 	u32	LCDINTMSK;
@@ -152,9 +152,10 @@ struct s3c24x0_lcd {
 };
 
 
-/* NAND FLASH (see S3C2410 manual chapter 6) */
-struct s3c2410_nand {
+/* NAND FLASH (see S3C2440 manual chapter 6) */
+struct s3c2440_nand {
 	u32	NFCONF;
+	u32	NFCONT;
 	u32	NFCMD;
 	u32	NFADDR;
 	u32	NFDATA;
@@ -538,7 +539,7 @@ struct s3c2400_adc {
 
 
 /* ADC (see manual chapter 16) */
-struct s3c2410_adc {
+struct s3c2440_adc {
 	u32	ADCCON;
 	u32	ADCTSC;
 	u32	ADCDLY;
@@ -626,7 +627,7 @@ struct s3c2400_mmc {
 
 
 /* SD INTERFACE (see S3C2410 manual chapter 19) */
-struct s3c2410_sdi {
+struct s3c2440_sdi {
 	u32	SDICON;
 	u32	SDIPRE;
 	u32	SDICARG;
