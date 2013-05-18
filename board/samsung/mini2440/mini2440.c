@@ -31,21 +31,16 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-#define FCLK_SPEED 2
+#define FCLK_SPEED 1
 
 #if FCLK_SPEED==0		/* Fout = 203MHz, Fin = 12MHz for Audio */
 #define M_MDIV	0xC3
 #define M_PDIV	0x4
 #define M_SDIV	0x1
-#elif FCLK_SPEED==1		/* Fout = 202.8MHz */
-#define M_MDIV	0xA1
-#define M_PDIV	0x3
+#elif FCLK_SPEED==1		/* Fout = 405 MHz */
+#define M_MDIV	0x7F
+#define M_PDIV	0x2
 #define M_SDIV	0x1
-#elif FCLK_SPEED==2        /* Fout = 400MHz */
-#define M_MDIV    0x5c     
-#define M_PDIV    0x1
-#define M_SDIV    0x1
-#endif
 #endif
 
 #define USB_CLOCK 2
@@ -113,8 +108,8 @@ int board_init (void)
 	gpio->GPHCON = 0x002AFAAA;
 	gpio->GPHUP = 0x000007FF;
 
-	/* arch number of SMDK2410-Board */
-	gd->bd->bi_arch_number = MACH_TYPE_SMDK2410;
+	/* arch number of MINI2440-Board */
+	gd->bd->bi_arch_number = MACH_TYPE_MINI2440;
 
 	/* adress of boot parameters */
 	gd->bd->bi_boot_params = 0x30000100;
@@ -137,8 +132,9 @@ int dram_init (void)
 int board_eth_init(bd_t *bis)
 {
 	int rc = 0;
-#ifdef CONFIG_CS8900
-	rc = cs8900_initialize(0, CONFIG_CS8900_BASE);
+
+#ifdef CONFIG_DRIVER_DM9000
+	rc = dm9000_initialize(bis);
 #endif
 	return rc;
 }

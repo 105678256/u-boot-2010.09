@@ -5,7 +5,7 @@
  * Gary Jennejohn <garyj@denx.de>
  * David Mueller <d.mueller@elsoft.ch>
  *
- * Configuation settings for the SAMSUNG SMDK2410 board.
+ * Configuation settings for the SAMSUNG MINI2440 board.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -35,10 +35,10 @@
 #define CONFIG_ARM920T	1	/* This is an ARM920T Core	*/
 #define CONFIG_S3C24X0	1	/* in a SAMSUNG S3C24x0-type SoC	*/
 #define CONFIG_S3C2440	1	/* specifically a SAMSUNG S3C2440 SoC	*/
-#define CONFIG_SMDK2440	1	/* on a SAMSUNG SMDK2440 Board  */
+#define CONFIG_MINI2440	1	/* on a SAMSUNG MINI2440 Board  */
 
 /* input clock of PLL */
-#define CONFIG_SYS_CLK_FREQ	12000000/* the SMDK2440 has 12MHz input clock */
+#define CONFIG_SYS_CLK_FREQ	12000000/* the MINI2440 has 12MHz input clock */
 
 
 #define USE_920T_MMU		1
@@ -46,18 +46,18 @@
 
 /** Size of malloc() pool*/
 #define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + 128*1024)
-#define CONFIG_SYS_GBL_DATA_SIZE	128	/* size in bytes reserved for initial data */
+#define CONFIG_SYS_GBL_DATA_SIZE	128  /* size in bytes reserved for initial data */
 
-/* Hardware drivers*/
-
+#define	CONFIG_DRIVER_DM9000		/* we have a DM9000 on-board */
+#define	CONFIG_DM9000_BASE	0x20000000
+#define	DM9000_IO		CONFIG_DM9000_BASE
+#define	DM9000_DATA		(CONFIG_DM9000_BASE + 4)
 #define CONFIG_NET_MULTI
-#define CONFIG_CS8900		/* we have a CS8900 on-board */
-#define CONFIG_CS8900_BASE	0x19000300
-#define CONFIG_CS8900_BUS16	/* the Linux driver does accesses as shorts */
+#define CONFIG_CMD_NET
 
 /* select serial console configuration*/
 #define CONFIG_S3C24X0_SERIAL
-#define CONFIG_SERIAL1          1	/* we use SERIAL 1 on SMDK2440 */
+#define CONFIG_SERIAL1          1	/* we use SERIAL 1 on MINI2440 */
 
 /******************************** RTC*******************************/
 
@@ -93,12 +93,15 @@
 
 #define CONFIG_BOOTDELAY	3
 /*#define CONFIG_BOOTARGS	"root=ramfs devfs=mount console=ttySA0,9600" */
-/*#define CONFIG_ETHADDR	08:00:3e:26:0a:5b */
+#define CONFIG_ETHADDR		00:E0:0C:BC:E5:60 
 #define CONFIG_NETMASK          255.255.255.0
-#define CONFIG_IPADDR		10.0.0.110
-#define CONFIG_SERVERIP		10.0.0.1
-/*#define CONFIG_BOOTFILE	"elinos-lart" */
+#define CONFIG_IPADDR		192.168.1.199
+#define CONFIG_SERVERIP		192.168.1.110
+#define CONFIG_BOOTFILE	"u-boot.bin" 
 /*#define CONFIG_BOOTCOMMAND	"tftp; bootm" */
+#define CONFIG_CMD_PING
+
+
 
 #if defined(CONFIG_CMD_KGDB)
 #define CONFIG_KGDB_BAUDRATE	115200		/* speed to run kgdb serial port */
@@ -108,7 +111,7 @@
 
 /*Miscellaneous configurable options*/
 #define	CONFIG_SYS_LONGHELP				/* undef to save memory		*/
-#define	CONFIG_SYS_PROMPT		"SMDK2440 # "	/* Monitor Command Prompt	*/
+#define	CONFIG_SYS_PROMPT		"MINI2440 # "	/* Monitor Command Prompt	*/
 #define	CONFIG_SYS_CBSIZE		256		/* Console I/O Buffer Size	*/
 #define	CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE+sizeof(CONFIG_SYS_PROMPT)+16) /* Print Buffer Size */
 #define	CONFIG_SYS_MAXARGS		16		/* max number of command args	*/
@@ -169,9 +172,9 @@
 
 
 /* ENV IS IN NAND */
-
+#define CONFIG_CMD_SAVEENV
 #define	CONFIG_ENV_IS_IN_NAND
-#define CONFIG_ENV_OFFSET	0x40000
+#define CONFIG_ENV_OFFSET	0x30000
 /*  #define	CONFIG_ENV_IS_IN_FLASH	1*/
 #define CONFIG_ENV_SIZE		0x10000	/* Total Size of Environment Sector */
 #define	CONFIG_LL_INIT_NAND_ONLY

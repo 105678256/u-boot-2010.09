@@ -683,7 +683,6 @@ NetSendUDPPacket(uchar *ether, IPaddr_t dest, int dport, int sport, int len)
 
 	return 0;	/* transmitted */
 }
-
 #if defined(CONFIG_CMD_PING)
 static ushort PingSeqNo;
 
