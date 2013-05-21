@@ -148,11 +148,17 @@
 #define CONFIG_SYS_FLASH_BASE		PHYS_FLASH_1
 
 /*------- FLASH and environment organization*/
-
-#define CONFIG_AMD_LV400	1	/* uncomment this if you have a LV400 flash */
 #if 0
+#define CONFIG_AMD_LV400	1	/* uncomment this if you have a LV400 flash */
 #define CONFIG_AMD_LV800	1	/* uncomment this if you have a LV800 flash */
 #endif
+#define CONFIG_SST_39VF1601        1          
+#define PHYS_FLASH_SIZE            0x200000 //2M NorFlash   
+#define CONFIG_SYS_MAX_FLASH_SECT  (512)           
+#define CONFIG_ENV_ADDR            (CONFIG_SYS_FLASH_BASE + 0x040000)  
+
+
+
 
 #define CONFIG_SYS_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #ifdef CONFIG_AMD_LV800

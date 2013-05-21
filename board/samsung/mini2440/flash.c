@@ -26,9 +26,11 @@
 
 ulong myflush (void);
 
+#define MAIN_SECT_SIZE  0x1000  
+#define MEM_FLASH_ADDR1     (*(volatile u16 *)(CONFIG_SYS_FLASH_BASE + (0x00005555 << 1))) #define MEM_FLASH_ADDR2     (*(volatile u16 *)(CONFIG_SYS_FLASH_BASE + (0x00002AAA << 1)))  
 
 #define FLASH_BANK_SIZE	PHYS_FLASH_SIZE
-#define MAIN_SECT_SIZE  0x10000	/* 64 KB */
+//#define MAIN_SECT_SIZE  0x10000	/* 64 KB */
 
 flash_info_t flash_info[CONFIG_SYS_MAX_FLASH_BANKS];
 
@@ -71,6 +73,9 @@ ulong flash_init (void)
 #elif defined(CONFIG_AMD_LV800)
 			(AMD_MANUFACT & FLASH_VENDMASK) |
 			(AMD_ID_LV800B & FLASH_TYPEMASK);
+#elif defined(CONFIG_SST_39VF1601)   //添加CONFIG_SST_39VF1601      
+			(SST_MANUFACT & FLASH_VENDMASK) |  
+			(SST_ID_xF1601 & FLASH_TYPEMASK);  
 #else
 #error "Unknown flash configured"
 #endif
@@ -132,6 +137,9 @@ void flash_print_info (flash_info_t * info)
 	case (AMD_MANUFACT & FLASH_VENDMASK):
 		printf ("AMD: ");
 		break;
+	case (SST_MANUFACT & FLASH_VENDMASK):    //添加SST39VF1601  
+		printf ("SST: ");  
+    break; 
 	default:
 		printf ("Unknown Vendor ");
 		break;
@@ -144,6 +152,9 @@ void flash_print_info (flash_info_t * info)
 	case (AMD_ID_LV800B & FLASH_TYPEMASK):
 		printf ("1x Amd29LV800BB (8Mbit)\n");
 		break;
+	 case (SST_ID_xF1601 & FLASH_TYPEMASK):   //添加SST39VF1601的  
+		printf ("1x SST39VF1610 (16Mbit)\n");  
+    break;  
 	default:
 		printf ("Unknown Chip Type\n");
 		goto Done;
@@ -185,10 +196,8 @@ int flash_erase (flash_info_t * info, int s_first, int s_last)
 		return ERR_INVAL;
 	}
 
-	if ((info->flash_id & FLASH_VENDMASK) !=
-	    (AMD_MANUFACT & FLASH_VENDMASK)) {
-		return ERR_UNKNOWN_FLASH_VENDOR;
-	}
+	if ((info->flash_id & FLASH_VENDMASK) != (SST_MANUFACT & FLASH_VENDMASK)) {  
+		return ERR_UNKNOWN_FLASH_VENDOR;  	}
 
 	prot = 0;
 	for (sect = s_first; sect <= s_last; ++sect) {
@@ -229,39 +238,17 @@ int flash_erase (flash_info_t * info, int s_first, int s_last)
 			*addr = CMD_ERASE_CONFIRM;
 
 			/* wait until flash is ready */
-			chip = 0;
+			while (1)  
+			{  
+				if ((*addr & 0x40) != (*addr & 0x40))  
+					continue;  
 
-			do {
-				result = *addr;
-
-				/* check timeout */
-				if (get_timer_masked () >
-				    CONFIG_SYS_FLASH_ERASE_TOUT) {
-					MEM_FLASH_ADDR1 = CMD_READ_ARRAY;
-					chip = TMO;
-					break;
-				}
-
-				if (!chip
-				    && (result & 0xFFFF) & BIT_ERASE_DONE)
-					chip = READY;
-
-				if (!chip
-				    && (result & 0xFFFF) & BIT_PROGRAM_ERROR)
-					chip = ERR;
-
-			} while (!chip);
-
-			MEM_FLASH_ADDR1 = CMD_READ_ARRAY;
-
-			if (chip == ERR) {
-				rc = ERR_PROG_ERROR;
-				goto outahere;
-			}
-			if (chip == TMO) {
-				rc = ERR_TIMOUT;
-				goto outahere;
-			}
+				if (*addr & 0x80)  
+				{  
+					rc = ERR_OK;  
+					break;  
+				}  
+			}  			
 
 			printf ("ok.\n");
 		} else {	/* it was protected */
@@ -320,41 +307,24 @@ static int write_hword (flash_info_t * info, ulong dest, ushort data)
 	MEM_FLASH_ADDR1 = CMD_UNLOCK1;
 	MEM_FLASH_ADDR2 = CMD_UNLOCK2;
 	MEM_FLASH_ADDR1 = CMD_UNLOCK_BYPASS;
-	*addr = CMD_PROGRAM;
+//	*addr = CMD_PROGRAM;
 	*addr = data;
 
 	/* arm simple, non interrupt dependent timer */
 	reset_timer_masked ();
 
 	/* wait until flash is ready */
-	chip = 0;
-	do {
-		result = *addr;
+	while (1)  
+	{  
+		if ((*addr & 0x40) != (*addr & 0x40))   
+			continue;  
 
-		/* check timeout */
-		if (get_timer_masked () > CONFIG_SYS_FLASH_ERASE_TOUT) {
-			chip = ERR | TMO;
-			break;
-		}
-		if (!chip && ((result & 0x80) == (data & 0x80)))
-			chip = READY;
-
-		if (!chip && ((result & 0xFFFF) & BIT_PROGRAM_ERROR)) {
-			result = *addr;
-
-			if ((result & 0x80) == (data & 0x80))
-				chip = READY;
-			else
-				chip = ERR;
-		}
-
-	} while (!chip);
-
-	*addr = CMD_READ_ARRAY;
-
-	if (chip == ERR || *addr != data)
-		rc = ERR_PROG_ERROR;
-
+		if ((*addr & 0x80) == (data & 0x80))  
+		{  
+			rc = ERR_OK;  
+			break;   
+		}  
+	}  
 	if (iflag)
 		enable_interrupts ();
 
