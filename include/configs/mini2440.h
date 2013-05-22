@@ -9,7 +9,6 @@
  *
  * See file CREDITS for list of people who contributed to this
  * project.
- *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of
@@ -29,8 +28,7 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-/*High Level Configuration Options
- * (easy to change)*/
+/*High Level Configuration Options* (easy to change)*/
 
 #define CONFIG_ARM920T	1	/* This is an ARM920T Core	*/
 #define CONFIG_S3C24X0	1	/* in a SAMSUNG S3C24x0-type SoC	*/
@@ -48,12 +46,13 @@
 #define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + 128*1024)
 #define CONFIG_SYS_GBL_DATA_SIZE	128  /* size in bytes reserved for initial data */
 
+/* Hardware drivers*/
+#define CONFIG_NET_MULTI	
 #define	CONFIG_DRIVER_DM9000		/* we have a DM9000 on-board */
 #define	CONFIG_DM9000_BASE	0x20000000
 #define	DM9000_IO		CONFIG_DM9000_BASE
 #define	DM9000_DATA		(CONFIG_DM9000_BASE + 4)
-#define CONFIG_NET_MULTI
-#define CONFIG_CMD_NET
+#define	CONFIG_DM9000_NO_SROM
 
 /* select serial console configuration*/
 #define CONFIG_S3C24X0_SERIAL
@@ -62,15 +61,11 @@
 /******************************** RTC*******************************/
 
 #define	CONFIG_RTC_S3C24X0	1
-
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
-
 #define CONFIG_BAUDRATE		115200
 
-
 /*BOOTP options*/
-
 #define CONFIG_BOOTP_BOOTFILESIZE
 #define CONFIG_BOOTP_BOOTPATH
 #define CONFIG_BOOTP_GATEWAY
@@ -80,28 +75,38 @@
 /*Command line configuration.*/
 
 #include <config_cmd_default.h>
-
 #define CONFIG_CMD_CACHE
 #define CONFIG_CMD_DATE
 #define CONFIG_CMD_ELF
+#define CONFIG_CMD_NET 
+#define CONFIG_CMD_PING
+#define CONFIG_CMD_NAND
+
+/* select serial console configuration*/
+#define CONFIG_S3C24X0_SERIAL
+#define CONFIG_SERIAL1          1	/* we use SERIAL 1 on MINI2440 */
+
+/******************************** RTC*******************************/
+
+#define	CONFIG_RTC_S3C24X0	1
+/* allow to overwrite serial and ethaddr */
+#define CONFIG_ENV_OVERWRITE
+#define CONFIG_BAUDRATE		115200
+
 
 /* define NAND */
-#define CONFIG_CMD_NAND
 #define CONFIG_SYS_MAX_NAND_DEVICE	1
-#define CONFIG_SYS_NAND_BASE	0x4E000000
+#define CONFIG_SYS_NAND_BASE		0x4E000000
 #define CONFIG_NAND_S3C2440
 
 #define CONFIG_BOOTDELAY	3
 /*#define CONFIG_BOOTARGS	"root=ramfs devfs=mount console=ttySA0,9600" */
-#define CONFIG_ETHADDR		00:E0:0C:BC:E5:60 
+#define CONFIG_ETHADDR		00:e0:0c:00:00:fd 
 #define CONFIG_NETMASK          255.255.255.0
 #define CONFIG_IPADDR		192.168.1.199
 #define CONFIG_SERVERIP		192.168.1.110
-#define CONFIG_BOOTFILE	"u-boot.bin" 
+#define CONFIG_BOOTFILE		"u-boot.bin" 
 /*#define CONFIG_BOOTCOMMAND	"tftp; bootm" */
-#define CONFIG_CMD_PING
-
-
 
 #if defined(CONFIG_CMD_KGDB)
 #define CONFIG_KGDB_BAUDRATE	115200		/* speed to run kgdb serial port */
@@ -119,70 +124,43 @@
 
 #define CONFIG_SYS_MEMTEST_START	0x30000000	/* memtest works on	*/
 #define CONFIG_SYS_MEMTEST_END		0x33F00000	/* 63 MB in DRAM	*/
-
 #define	CONFIG_SYS_LOAD_ADDR		0x33000000	/* default load address	*/
-
 #define	CONFIG_SYS_HZ			1000
 
 /* valid baudrates */
 #define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 
-/*-----------------------------------------------------------------------
- * Stack sizes
- * The stack sizes are set up in start.S using the settings below*/
-
+/*Stack sizesThe stack sizes are set up in start.S using the settings below*/
 #define CONFIG_STACKSIZE	(128*1024)	/* regular stack */
 #ifdef CONFIG_USE_IRQ
 #define CONFIG_STACKSIZE_IRQ	(4*1024)	/* IRQ stack */
 #define CONFIG_STACKSIZE_FIQ	(4*1024)	/* FIQ stack */
 #endif
 
-/*------- Physical Memory Map*/
-
+/*Physical Memory Map*/
 #define CONFIG_NR_DRAM_BANKS	1	   /* we have 1 bank of DRAM */
 #define PHYS_SDRAM_1		0x30000000 /* SDRAM Bank #1 */
 #define PHYS_SDRAM_1_SIZE	0x04000000 /* 64 MB */
-
 #define PHYS_FLASH_1		0x00000000 /* Flash Bank #1 */
+#define CONFIG_SYS_FLASH_BASE	PHYS_FLASH_1
 
-#define CONFIG_SYS_FLASH_BASE		PHYS_FLASH_1
+/* FLASH and environment organization*/
 
-/*------- FLASH and environment organization*/
-#if 0
-#define CONFIG_AMD_LV400	1	/* uncomment this if you have a LV400 flash */
-#define CONFIG_AMD_LV800	1	/* uncomment this if you have a LV800 flash */
-#endif
-#define CONFIG_SST_39VF1601        1          
-#define PHYS_FLASH_SIZE            0x200000 //2M NorFlash   
-#define CONFIG_SYS_MAX_FLASH_SECT  (512)           
-#define CONFIG_ENV_ADDR            (CONFIG_SYS_FLASH_BASE + 0x040000)  
+#define CONFIG_SST_39VF1601		1          
+#define PHYS_FLASH_SIZE			0x200000 //2m NorFlash 
+#define CONFIG_SYS_MAX_FLASH_SECT  	(512)        //扇区大小，一扇区4k      
+#define	CONFIG_SYS_MAX_FLASH_BANKS	1	/* max number of memory banks */
 
+#define	CONFIG_ENV_IS_IN_FLASH  1
+//#define	CONFIG_ENV_IS_IN_NAND    1
 
-
-
-#define CONFIG_SYS_MAX_FLASH_BANKS	1	/* max number of memory banks */
-#ifdef CONFIG_AMD_LV800
-#define PHYS_FLASH_SIZE		0x00100000 /* 1MB */
-#define CONFIG_SYS_MAX_FLASH_SECT	(19)	/* max number of sectors on one chip */
-#define CONFIG_ENV_ADDR	(CONFIG_SYS_FLASH_BASE + 0x0F0000) /* addr of environment */
-#endif
-#ifdef CONFIG_AMD_LV400
-#define PHYS_FLASH_SIZE		0x00080000 /* 512KB */
-#define CONFIG_SYS_MAX_FLASH_SECT	(11)	/* max number of sectors on one chip */
-#define CONFIG_ENV_ADDR	(CONFIG_SYS_FLASH_BASE + 0x070000) /* addr of environment */
-#endif
+#define	CONFIG_ENV_ADDR		(CONFIG_SYS_FLASH_BASE + 0x001F0000)
+#define	CONFIG_ENV_SIZE		0x10000
+#define	CONFIG_ENV_OFFSET	0x30000
 
 /* timeout values are in ticks */
 #define CONFIG_SYS_FLASH_ERASE_TOUT	(5*CONFIG_SYS_HZ) /* Timeout for Flash Erase */
 #define CONFIG_SYS_FLASH_WRITE_TOUT	(5*CONFIG_SYS_HZ) /* Timeout for Flash Write */
 
-
-/* ENV IS IN NAND */
-#define CONFIG_CMD_SAVEENV
-#define	CONFIG_ENV_IS_IN_NAND
-#define CONFIG_ENV_OFFSET	0x30000
-/*  #define	CONFIG_ENV_IS_IN_FLASH	1*/
-#define CONFIG_ENV_SIZE		0x10000	/* Total Size of Environment Sector */
 #define	CONFIG_LL_INIT_NAND_ONLY
-
 #endif	/* __CONFIG_H */

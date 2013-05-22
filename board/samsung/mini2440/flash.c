@@ -27,8 +27,8 @@
 ulong myflush (void);
 
 #define MAIN_SECT_SIZE  0x1000  
-#define MEM_FLASH_ADDR1     (*(volatile u16 *)(CONFIG_SYS_FLASH_BASE + (0x00005555 << 1))) #define MEM_FLASH_ADDR2     (*(volatile u16 *)(CONFIG_SYS_FLASH_BASE + (0x00002AAA << 1)))  
-
+#define MEM_FLASH_ADDR1     (*(volatile u16 *)(CONFIG_SYS_FLASH_BASE + (0x00005555 << 1))) 
+#define MEM_FLASH_ADDR2     (*(volatile u16 *)(CONFIG_SYS_FLASH_BASE + (0x00002AAA << 1))) 
 #define FLASH_BANK_SIZE	PHYS_FLASH_SIZE
 //#define MAIN_SECT_SIZE  0x10000	/* 64 KB */
 
@@ -43,8 +43,6 @@ flash_info_t flash_info[CONFIG_SYS_MAX_FLASH_BANKS];
 #define CMD_PROGRAM		0x000000A0
 #define CMD_UNLOCK_BYPASS	0x00000020
 
-#define MEM_FLASH_ADDR1		(*(volatile u16 *)(CONFIG_SYS_FLASH_BASE + (0x00000555 << 1)))
-#define MEM_FLASH_ADDR2		(*(volatile u16 *)(CONFIG_SYS_FLASH_BASE + (0x000002AA << 1)))
 
 #define BIT_ERASE_DONE		0x00000080
 #define BIT_RDY_MASK		0x00000080
@@ -166,7 +164,7 @@ void flash_print_info (flash_info_t * info)
 
 	printf ("  Sector Start Addresses:");
 	for (i = 0; i < info->sector_count; i++) {
-		if ((i % 5) == 0) {
+		if ((i % 8) == 0) {
 			printf ("\n   ");
 		}
 		printf (" %08lX%s", info->start[i],
@@ -182,10 +180,8 @@ void flash_print_info (flash_info_t * info)
 
 int flash_erase (flash_info_t * info, int s_first, int s_last)
 {
-	ushort result;
 	int iflag, cflag, prot, sect;
 	int rc = ERR_OK;
-	int chip;
 
 	/* first look for protection bits */
 
@@ -237,30 +233,19 @@ int flash_erase (flash_info_t * info, int s_first, int s_last)
 			MEM_FLASH_ADDR2 = CMD_UNLOCK2;
 			*addr = CMD_ERASE_CONFIRM;
 
-			/* wait until flash is ready */
-			while (1)  
-			{  
-				if ((*addr & 0x40) != (*addr & 0x40))  
-					continue;  
-
-				if (*addr & 0x80)  
-				{  
-					rc = ERR_OK;  
-					break;  
-				}  
-			}  			
-
-			printf ("ok.\n");
-		} else {	/* it was protected */
-
-			printf ("protected!\n");
-		}
+			while(1) {
+				unsigned short i;
+				i = *((volatile unsigned short *)addr) & 0x40;
+				if(i != (*((volatile unsigned short *)addr) & 0x40))
+					continue;
+				if((*((volatile unsigned short *)addr)) & 0x80)
+					break;	
+			printf ("ok.\n");		 
+			}
 	}
 
 	if (ctrlc ())
 		printf ("User Interrupt!\n");
-
-      outahere:
 	/* allow flash to settle - wait 10 ms */
 	udelay_masked (10000);
 
@@ -272,10 +257,8 @@ int flash_erase (flash_info_t * info, int s_first, int s_last)
 
 	return rc;
 }
-
-/*-----------------------------------------------------------------------
- * Copy memory to flash
- */
+}
+/* Copy memory to flash*/
 
 static int write_hword (flash_info_t * info, ulong dest, ushort data)
 {
@@ -283,7 +266,6 @@ static int write_hword (flash_info_t * info, ulong dest, ushort data)
 	ushort result;
 	int rc = ERR_OK;
 	int cflag, iflag;
-	int chip;
 
 	/*
 	 * Check if Flash is (sufficiently) erased
@@ -306,25 +288,22 @@ static int write_hword (flash_info_t * info, ulong dest, ushort data)
 
 	MEM_FLASH_ADDR1 = CMD_UNLOCK1;
 	MEM_FLASH_ADDR2 = CMD_UNLOCK2;
-	MEM_FLASH_ADDR1 = CMD_UNLOCK_BYPASS;
-//	*addr = CMD_PROGRAM;
+	MEM_FLASH_ADDR1 = CMD_PROGRAM;
 	*addr = data;
 
 	/* arm simple, non interrupt dependent timer */
 	reset_timer_masked ();
 
 	/* wait until flash is ready */
-	while (1)  
-	{  
-		if ((*addr & 0x40) != (*addr & 0x40))   
-			continue;  
-
-		if ((*addr & 0x80) == (data & 0x80))  
-		{  
-			rc = ERR_OK;  
-			break;   
-		}  
-	}  
+	while(1){
+		unsigned short i = *(volatile unsigned short *)addr & 0x40;
+		if(i != (*(volatile unsigned short *)addr & 0x40))   //D6 == D6
+			continue;
+		if((*(volatile unsigned short *)addr & 0x80) == (data & 0x80)){
+			rc = ERR_OK;
+			break;     //D7 == D7
+		}
+	}
 	if (iflag)
 		enable_interrupts ();
 
