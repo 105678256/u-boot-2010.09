@@ -7,9 +7,6 @@
 /* GPIO */
 #define GPHCON              (*(volatile unsigned long *)0x56000070)
 #define GPHUP               (*(volatile unsigned long *)0x56000078)
-void copy_to_sdram(unsigned char *src, unsigned char *dest, unsigned int size)
-{	
-	nand_read((unsigned char)*src, *dest, size);	}
 
 #define BUSY 1
 	inline void wait_idle(void) {
@@ -21,7 +18,7 @@ void copy_to_sdram(unsigned char *src, unsigned char *dest, unsigned int size)
 
 #define NAND_SECTOR_SIZE	512
 #define NAND_BLOCK_MASK		(NAND_SECTOR_SIZE - 1)
-int nand_read(unsigned char *buf, unsigned long start_addr, unsigned int size)
+int nand_read_ll(unsigned char *buf, unsigned long start_addr, unsigned int size)
 {	int i, j;
 	if ((start_addr & NAND_BLOCK_MASK) || (size & NAND_BLOCK_MASK)) {
 		return -1;	}
